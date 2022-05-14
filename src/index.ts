@@ -1,23 +1,19 @@
-import * as fs from "fs/promises";
-import * as path from "path";
-import { marked } from "marked";
-import createDir from "./helper/createDir";
+import path from "path";
+import {convertInputPathToOutputPath, createOutDirs, createOutFiles} from "./lib/createOutput";
+import getContentPaths from "./lib/getContentPaths";
 
-const getContentPath = (filename: string) =>
-  path.join(__dirname, "../content/", filename);
-const getOutputPath = (filename: string) =>
-  path.join(__dirname, "../dist/", filename);
+run();
 
-fs.readFile(getContentPath("content.md"), "utf-8").then(
-  async (content: string) => {
-    const markedContent = marked.parse(content);
-    const dirPath = path.join(__dirname, "../dist/");
+async function run() {
+  const from = path.resolve(__dirname, "../../content/");
+  const to = path.resolve(__dirname, "../../dist/");
 
-    try {
-      await createDir(dirPath)
-      fs.writeFile(getOutputPath("content.html"), markedContent);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-);
+  const { files, directories } = await getContentPaths(from);
+  
+  const [outDirectories, outFilePaths] = [directories, files].map((paths) =>
+    convertInputPathToOutputPath(paths, from, to)
+  );
+  
+  await createOutDirs(outDirectories);
+  createOutFiles(files, outFilePaths);
+}
