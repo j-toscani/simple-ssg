@@ -5,8 +5,8 @@ import getContentPaths from "./lib/getContentPaths";
 run();
 
 async function run() {
-  const from = path.resolve(__dirname, "../../content/");
-  const to = path.resolve(__dirname, "../../dist/");
+  const from = path.resolve(__dirname, "../content/");
+  const to = path.resolve(__dirname, "../dist/");
 
   const { files, directories } = await getContentPaths(from);
   
