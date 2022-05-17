@@ -1,5 +1,8 @@
-import { ContentAttributes } from "./convertContent";
+import * as path from "path";
+import fillTemplate from "./readTemplate";
 
-export function createPage(content: ContentAttributes) {
-    return content.body;
+export function createPageFactory(template: string) {
+    return <T extends {body:string}>(content: T ) => {
+        return fillTemplate(template, content);
+    }
 }
