@@ -1,7 +1,8 @@
 import fs from "fs/promises";
+import path from "path";
 import createDir from "../helper/createDir";
 import { convertContent } from "./convertContent";
-import { createPage } from "./createPage";
+import { createPageFactory } from "./createPage";
 
 export async function createOutFiles(
   inputFiles: string[],
@@ -9,6 +10,8 @@ export async function createOutFiles(
 ) {
   const contents = await Promise.all(inputFiles.map(getContents));
   const attributes = contents.map(convertContent);
+  const template = await getContents(path.resolve(__dirname, "../templates/default.html"))
+  const createPage = createPageFactory(template);
   const pages = attributes.map(createPage);
 
   pages.forEach((page, index) => writePages(outFilePaths[index], page))
